@@ -1,5 +1,9 @@
 package router
 
+import "zhangyudevops.com/router/example"
+
 type RouterGroup struct {
-	Example
+	Example example.RouterGroup
 }
+
+var RouterGroupApp = new(RouterGroup)
