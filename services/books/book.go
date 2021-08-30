@@ -9,13 +9,14 @@ type ManageBooksService struct {
 
 }
 
-func (m *ManageBooksService) CreateLoginUser(userName string, password string, phoneNumber string) (err error) {
-	var loginUser books.BookLoginUser
-	loginUser.UserName = userName
-	loginUser.Password = password
-	loginUser.PhoneNumber = phoneNumber
+// CreateLoginUser 存入数据库
+func (m *ManageBooksService) CreateLoginUser(user books.BookLoginUser) (err error) {
 
-	err = global.GVA_DB.Create(&loginUser).Error
+	err = global.GVA_DB.Create(&user).Error
 	return err
+}
+
+func (m ManageBooksService) SelectLoginUser()  {
+
 }
 

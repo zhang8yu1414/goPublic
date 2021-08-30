@@ -2,6 +2,7 @@ package library
 
 import (
 	"github.com/gin-gonic/gin"
+	"zhangyudevops.com/model/books"
 	"zhangyudevops.com/model/common/response"
 	"zhangyudevops.com/utils"
 )
@@ -21,9 +22,19 @@ func (t BooksApi) CreateLoginUser(c *gin.Context)  {
 	phoneNumber := c.Request.FormValue("phoneNumber")
 
 	password = utils.Md5Reverse(password)
-	if err := LibService.CreateLoginUser(userName, password, phoneNumber); err != nil {
+	var user = books.BookLoginUser{
+		UserName: userName,
+		Password: password,
+		PhoneNumber: phoneNumber,
+	}
+	if err := LibService.CreateLoginUser(user); err != nil {
 		response.FailWithMessage("创建用户失败", c)
 		return
 	}
 	response.OKWithMessage("用户创建成功", c)
+}
+
+// GetLoginUser 查询登录用户
+func (t BooksApi) GetLoginUser(c *gin.Context) {
+
 }
