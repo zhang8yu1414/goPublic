@@ -12,7 +12,8 @@ func (t *TestRouter) InitTestRouter(Router *gin.RouterGroup) {
 	testRouter := Router.Group("test")
 	var exaTestApi = v1.ApiGroupApp.TestApiGroup.BooksApi
 	{
-		testRouter.GET("info", exaTestApi.TestInfo)
 		testRouter.POST("createLoginUser", exaTestApi.CreateLoginUser)
+		testRouter.POST("getLoginUser", exaTestApi.GetLoginUser)
+		testRouter.POST("deleteLoginUser", exaTestApi.DeleteLoginUser)
 	}
 }

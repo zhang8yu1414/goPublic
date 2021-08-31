@@ -2,7 +2,9 @@ package library
 
 import (
 	"github.com/gin-gonic/gin"
-	"zhangyudevops.com/model/books"
+	"go.uber.org/zap"
+	"zhangyudevops.com/core/books"
+	"zhangyudevops.com/global"
 	"zhangyudevops.com/model/common/response"
 	"zhangyudevops.com/utils"
 )
@@ -17,17 +19,9 @@ func (t *BooksApi) TestInfo(c *gin.Context)  {
 
 // CreateLoginUser 创建登录用户
 func (t BooksApi) CreateLoginUser(c *gin.Context)  {
-	userName := c.Request.FormValue("userName")
-	password := c.Request.FormValue("password")
-	phoneNumber := c.Request.FormValue("phoneNumber")
-
-	password = utils.Md5Reverse(password)
-	var user = books.BookLoginUser{
-		UserName: userName,
-		Password: password,
-		PhoneNumber: phoneNumber,
-	}
-	if err := LibService.CreateLoginUser(user); err != nil {
+	data := books.GetLoginPostData(c)
+	if err := LibService.CreateLoginUser(data); err != nil {
+		global.GVA_LOG.Error("登录用户注册失败", zap.Any("err", err))
 		response.FailWithMessage("创建用户失败", c)
 		return
 	}
@@ -36,5 +30,24 @@ func (t BooksApi) CreateLoginUser(c *gin.Context)  {
 
 // GetLoginUser 查询登录用户
 func (t BooksApi) GetLoginUser(c *gin.Context) {
+	userName := c.Request.FormValue("userName")
+	password := c.Request.FormValue("password")
 
+	password = utils.Md5Reverse(password)
+
+	result := LibService.SelectLoginUser(userName, password)
+	if result.Error != nil {
+		global.GVA_LOG.Error("数据查询失败", zap.Any("err", result.Error))
+		response.FailWithMessage("查询失败", c)
+	} else {
+		response.OKWithMessage("用户查询成功", c)
+	}
+}
+
+// DeleteLoginUser 删除登录用户
+func (t BooksApi) DeleteLoginUser(c *gin.Context)  {
+	userName := c.Request.FormValue("userName")
+	LibService.DeleteLoginUser(userName)
+	global.GVA_LOG.Info("登录用户删除成功", zap.String("username", userName))
+	response.OKWithMessage("登录用户删除成功", c)
 }
