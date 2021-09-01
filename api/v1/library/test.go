@@ -47,7 +47,12 @@ func (t BooksApi) GetLoginUser(c *gin.Context) {
 // DeleteLoginUser 删除登录用户
 func (t BooksApi) DeleteLoginUser(c *gin.Context)  {
 	userName := c.Request.FormValue("userName")
-	LibService.DeleteLoginUser(userName)
-	global.GVA_LOG.Info("登录用户删除成功", zap.String("username", userName))
-	response.OKWithMessage("登录用户删除成功", c)
+	result := LibService.DeleteLoginUser(userName)
+	if result.Error == nil {
+		global.GVA_LOG.Info("登录用户删除成功", zap.String("username", userName))
+		response.OKWithMessage("登录用户删除成功", c)
+	} else {
+		response.FailWithMessage("删除用户失败", c)
+	}
+
 }

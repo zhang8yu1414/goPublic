@@ -26,7 +26,8 @@ func (m ManageBooksService) SelectLoginUser(username string, password string) *g
 	return result
 }
 
-func (m ManageBooksService) DeleteLoginUser(username string)  {
+func (m ManageBooksService) DeleteLoginUser(username string) *gorm.DB {
 	var user books.BookLoginUser
-	global.GVA_DB.Where("user_name = ?", username).Delete(&user)
+	result := global.GVA_DB.Where("user_name = ?", username).Delete(&user)
+	return result
 }
