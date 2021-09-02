@@ -1,7 +1,6 @@
 package books
 
 import (
-	"gorm.io/gorm"
 	"zhangyudevops.com/global"
 	"zhangyudevops.com/model/books"
 )
@@ -16,18 +15,16 @@ func (m *ManageBooksService) CreateLoginUser(user books.BookLoginUser) (err erro
 	return err
 }
 
-// SelectLoginUser 查询用户登录数据
-func (m ManageBooksService) SelectLoginUser(username string, password string) *gorm.DB {
+// SelectLoginUser 用户登录
+func (m ManageBooksService) SelectLoginUser(username string, password string) (userInfo *books.BookLoginUser, err error) {
 	var user books.BookLoginUser
-	result := global.GVA_DB.Where(&books.BookLoginUser{
-		UserName: username,
-		Password: password,
-	}).First(&user)
-	return result
+	err = global.GVA_DB.Where("user_name = ? AND password = ?", username, password).First(&user).Error
+	return &user, err
 }
 
-func (m ManageBooksService) DeleteLoginUser(username string) *gorm.DB {
+// DeleteLoginUser 删除用户
+func (m ManageBooksService) DeleteLoginUser(username string) (userInfo *books.BookLoginUser, err error) {
 	var user books.BookLoginUser
-	result := global.GVA_DB.Where("user_name = ?", username).Delete(&user)
-	return result
+	err = global.GVA_DB.Where("user_name = ?", username).Delete(&user).Error
+	return &user, err
 }

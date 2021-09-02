@@ -3,18 +3,25 @@ package initial
 import (
 	"github.com/gin-gonic/gin"
 	"zhangyudevops.com/global"
-	"zhangyudevops.com/router"
+	"zhangyudevops.com/middleware"
+	"zhangyudevops.com/routers"
 )
 
 func Routers() *gin.Engine {
 	var Router = gin.Default()
 
-	exampleRouter := router.RouterGroupApp.Example
+	exampleRouter := routers.RouterGroupApp.Example
 	PublicGroup := Router.Group("")
 	{
 		exampleRouter.InitTestRouter(PublicGroup)
 	}
 
-	global.GVA_LOG.Info("router register success")
+	PrivateRouter := Router.Group("")
+	PrivateRouter.Use(middleware.JWTAuth())
+	{
+		//exampleRouter.InitTestRouter(PublicGroup)
+	}
+
+	global.GVA_LOG.Info("routers register success")
 	return Router
 }

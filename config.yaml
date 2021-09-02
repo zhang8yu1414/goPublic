@@ -2,6 +2,7 @@ system:
   env: public
   addr: 8888
   db-type: mysql
+  use-multipoint: false
 zap:
   level: info
   format: console
@@ -23,6 +24,6 @@ mysql:
   log-mode: ""
   log-zap: false
 jwt:
-  signing-key: tokyohot
+  signing-key: TokyoHot
   expires-time: 60
-  buffer-time: 100
+  buffer-time: 20

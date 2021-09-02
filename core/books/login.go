@@ -2,8 +2,6 @@ package books
 
 import (
 	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
-	"zhangyudevops.com/global"
 	"zhangyudevops.com/model/books"
 	"zhangyudevops.com/utils"
 )
@@ -19,7 +17,7 @@ func GetLoginPostData(c *gin.Context) (user books.BookLoginUser) {
 		Password: password,
 		PhoneNumber: phoneNumber,
 	}
-	global.GVA_LOG.Info("提交的user信息为", zap.Any("info", user))
+	//global.GVA_LOG.Info("提交的user信息为", zap.Any("info", user))
 
 	return user
 }
