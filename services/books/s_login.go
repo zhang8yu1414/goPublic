@@ -3,6 +3,7 @@ package books
 import (
 	"zhangyudevops.com/global"
 	"zhangyudevops.com/model/books"
+	"zhangyudevops.com/utils"
 )
 
 type ManageBooksService struct {
@@ -11,6 +12,8 @@ type ManageBooksService struct {
 
 // CreateLoginUser 存入数据库
 func (m *ManageBooksService) CreateLoginUser(user books.BookLoginUser) (err error) {
+//func (m *ManageBooksService) CreateLoginUser(user books.BookLoginUser) (err error) {
+	user.Password = utils.Md5Reverse(user.Password)
 	err = global.GVA_DB.Create(&user).Error
 	return err
 }

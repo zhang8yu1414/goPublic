@@ -5,38 +5,32 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 	"go.uber.org/zap"
 	"time"
-	"zhangyudevops.com/core/books"
 	"zhangyudevops.com/global"
 	"zhangyudevops.com/middleware"
 	modelBook "zhangyudevops.com/model/books"
+	sysReq "zhangyudevops.com/model/books/request"
+	modelResponse "zhangyudevops.com/model/books/response"
 	"zhangyudevops.com/model/common/response"
-	sysReq "zhangyudevops.com/model/system/request"
-	modelResponse "zhangyudevops.com/model/system/response"
+	"zhangyudevops.com/model/system/request"
 	"zhangyudevops.com/utils"
 )
 
-type BooksApi struct {
-}
-
-func (t *BooksApi) TestInfo(c *gin.Context) {
-	response.OKWithDetailed("Hello World!", "成功", c)
+type UserApi struct {
 }
 
 // RegistryUser 创建登录用户
-func (t *BooksApi) RegistryUser(c *gin.Context) {
-	// 单个取值，绑定结构体写法
-	data := books.GetLoginPostData(c)
+func (t *UserApi) RegistryUser(c *gin.Context) {
 
-	// @todo: ShouldBindJSON 写法， 不成功， 需要继续研究
-	//var loginUser sysReq.Register
-	//_ = c.ShouldBindJSON(&loginUser)
-	//user := &modelBook.BookLoginUser{
-	//	UserName: loginUser.Username,
-	//	Password: loginUser.Password,
-	//	PhoneNumber: loginUser.Password,
-	//}
+	// @todo: ShouldBindJSON 写法， 成功
+	var loginUser sysReq.Register
+	_ = c.ShouldBindJSON(&loginUser)
+	user := &modelBook.BookLoginUser{
+		UserName: loginUser.Username,
+		Password: loginUser.Password,
+		PhoneNumber: loginUser.PhoneNumber,
+	}
 
-	if err := LibService.CreateLoginUser(data); err != nil {
+	if err := LibService.CreateLoginUser(*user); err != nil {
 		global.GVA_LOG.Error("登录用户注册失败", zap.Any("err", err))
 		response.FailWithMessage("创建用户失败", c)
 		return
@@ -45,7 +39,7 @@ func (t *BooksApi) RegistryUser(c *gin.Context) {
 }
 
 // Login 用户登录
-func (t *BooksApi) Login(c *gin.Context) {
+func (t *UserApi) Login(c *gin.Context) {
 	userName := c.Request.FormValue("userName")
 	password := c.Request.FormValue("password")
 	password = utils.Md5Reverse(password)
@@ -59,11 +53,11 @@ func (t *BooksApi) Login(c *gin.Context) {
 	}
 }
 
-func (t *BooksApi) tokenNext(c *gin.Context, user modelBook.BookLoginUser) {
+func (t *UserApi) tokenNext(c *gin.Context, user modelBook.BookLoginUser) {
 	j := &middleware.JWT{
 		SigningKey: []byte(global.GVA_CONFIG.JWT.SigningKey),
 	}
-	claims := sysReq.CustomClaims{
+	claims := request.CustomClaims{
 		Username:   user.UserName,
 		BufferTime: global.GVA_CONFIG.JWT.BufferTime,
 		StandardClaims: jwt.StandardClaims{
@@ -88,7 +82,7 @@ func (t *BooksApi) tokenNext(c *gin.Context, user modelBook.BookLoginUser) {
 }
 
 // DeleteLoginUser 删除登录用户
-func (t *BooksApi) DeleteLoginUser(c *gin.Context) {
+func (t *UserApi) DeleteLoginUser(c *gin.Context) {
 	userName := c.Request.FormValue("userName")
 	_, err := LibService.DeleteLoginUser(userName)
 	if err == nil {
